@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fermah</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #002147, #00b36b);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .quiz-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px 40px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .question {
+      font-size: 1.4rem;
+      margin-bottom: 25px;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice {
+      background: #00b36b;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .choice:hover {
+      background: #007a50;
+    }
+
+    .btn {
+      background: #00416a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #002d4d;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 30px;
+      font-size: 0.9rem;
+      color: #e0e0e0;
+    }
+
+    .footer a {
+      color: #00ffae;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fermah</h1>
+  <div class="quiz-container">
+    <div id="start-screen">
+      <p>Welcome to the Fermah Quiz! Click below to start.</p>
+      <button id="start-btn" class="btn">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div id="question-container">
+        <div id="question" class="question"></div>
+        <div id="choices" class="choices"></div>
+      </div>
+      <button id="next-btn" class="btn hidden">Next</button>
+    </div>
+
+    <div id="end-screen" class="hidden">
+      <h2>Quiz Completed!</h2>
+      <p id="score"></p>
+      <button id="restart-btn" class="btn">Restart Quiz</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>Aadi.XYZ</div>
+    <div><a href="https://x.com/Abdulahad1473" target="_blank">@Abdulahad1473</a></div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const endScreen = document.getElementById('end-screen');
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const scoreEl = document.getElementById('score');
+
+    const questions = [
+      {
+        question: "What problem does Fermah primarily aim to solve?",
+        choices: [
+          "A) Lack of smart contract platforms for ZK proofs",
+          "B) High cost, slow speed, and unreliability of zero-knowledge proof generation",
+          "C) Scarcity of GPUs for machine learning",
+          "D) Need for new consensus algorithms"
+        ],
+        answer: 1
+      },
+      {
+        question: "In the Fermah model, what does the supply side consist of?",
+        choices: [
+          "A) Smart contract developers writing ZK circuits",
+          "B) Centralized data centers owned by Fermah",
+          "C) Machines like GPUs run by operators (e.g., via EigenLayer)",
+          "D) Only CPUs in server farms"
+        ],
+        answer: 2
+      },
+      {
+        question: "What is the role of the Matchmaker in Fermah’s architecture?",
+        choices: [
+          "A) Writes ZK circuits for proof generation",
+          "B) Verifies proofs on-chain",
+          "C) Matches proof requests from Seekers to Prover Nodes and allocates resources",
+          "D) Handles custody of user funds"
+        ],
+        answer: 2
+      },
+      {
+        question: "Which proof system is mentioned as supported by Fermah?",
+        choices: [
+          "A) Plonk only",
+          "B) Groth16 by Jens Groth",
+          "C) Only Fermah’s proprietary system",
+          "D) None"
+        ],
+        answer: 1
+      },
+      {
+        question: "What does 'credibly neutral' mean in Fermah’s context?",
+        choices: [
+          "A) Fermah will never charge users",
+          "B) Fermah supports all proof systems without bias",
+          "C) Fermah uses one kind of GPU hardware",
+          "D) Fermah avoids financial applications"
+        ],
+        answer: 1
+      },
+      {
+        question: "Which of the following is NOT listed as a node type in Fermah?",
+        choices: [
+          "A) Seekers",
+          "B) Prover Nodes",
+          "C) Matchmaker",
+          "D) Validator Nodes (block validation)"
+        ],
+        answer: 3
+      },
+      {
+        question: "What defines a 'proof system' in Fermah?",
+        choices: [
+          "A) Decentralized ledger for proof tasks",
+          "B) A triple: Setup Parameters, Prover, and Verifier",
+          "C) Virtual machine for executing smart contracts",
+          "D) GPU hardware specification"
+        ],
+        answer: 1
+      },
+      {
+        question: "What does 'universal proving' mean in Fermah?",
+        choices: [
+          "A) Proofs for one specific blockchain",
+          "B) Proofs for any proof system, chain, or VM",
+          "C) Proofs only for educational apps",
+          "D) Proofs using only CPUs"
+        ],
+        answer: 1
+      },
+      {
+        question: "What hardware is mentioned as part of the supply side?",
+        choices: [
+          "A) Only CPUs",
+          "B) GPUs and FPGAs",
+          "C) Smartphones and tablets",
+          "D) Quantum computers"
+        ],
+        answer: 1
+      },
+      {
+        question: "Who makes up the demand side of Fermah’s network?",
+        choices: [
+          "A) Hardware manufacturers",
+          "B) Developers or entities submitting proof requests (Seekers)",
+          "C) Companies selling GPUs",
+          "D) Miners validating transactions"
+        ],
+        answer: 1
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    startBtn.addEventListener('click', startQuiz);
+    nextBtn.addEventListener('click', nextQuestion);
